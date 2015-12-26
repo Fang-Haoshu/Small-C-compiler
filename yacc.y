@@ -2,10 +2,11 @@
 #include "main.h"	//lexºÍyaccÒª¹²ÓÃµÄÍ·ÎÄ¼ş£¬ÀïÃæ°üº¬ÁËÒ»Ğ©Í·ÎÄ¼ş
 #include <stdlib.h>  
 #include <stdio.h>  
-#include "tree.c"  
+#include "tree.c" 
+#include "IR.c" 
   
 TreeNode* p;  
-FILE *fout;
+FILE *fout1;
 
   					
 	void yyerror(char *s);
@@ -88,7 +89,7 @@ extvars :
                                 $$=p;}  
         ;  
 spec    :  
-           TYPE                 { p=newNode("spec",$1->Line);  
+           TYPE                 { p=newNode("type",$1->Line);  
                                  link(p,$1);  
                                  $$=p;}   
         |  stspec               { p=newNode("spec",$1->Line);  
@@ -156,7 +157,7 @@ stmt      :
           |  stmtblock           { p=newNode("stmt",$1->Line);  
                                 link(p,$1);  
                                 $$=p;}  
-          |  RETURN exp SEMI     { p=newNode("stmt",$1->Line);  
+          |  RETURN exps SEMI     { p=newNode("stmt",$1->Line);  
                                 link(p,$1); link(p,$2);  link(p,$3);  
                                 $$=p;}  
           | IF LP exps RP stmt estmt  { p=newNode("stmt",$1->Line);  
@@ -261,7 +262,7 @@ exps       :
                                    link(p, $2);  
                                    link(p, $3);  
                                 $$ = p;}  
-          | exp SUB exp        {p = newNode("exp", $1->Line);  
+          | exp SUB exp        {p = newNode("exp", $1->Line);  //¸Ä³Éexps SUB exp »áºÃÒ»µã£¿
                                       link(p, $1);  
                                       link(p, $2);  
                                       link(p, $3);  
@@ -290,8 +291,8 @@ exps       :
                                 $$=p;}  
           ;  
 
-exp       :  exps               {}              
-          |                    {p=newNode("NULL",0);  
+exp       :  exps               {TreeNode *p=$1; $$=p;}              
+          |                    {p=newNode("exp-null",0);  
                                 $$=p;}  
           ; 
 
@@ -299,7 +300,7 @@ arrs      :
              LB exp RB arrs    {p=newNode("arrs",$1->Line);  
                                 link(p,$1); link(p,$2); link(p,$3); link(p,$4);  
                                 $$=p;}  
-          |                     { p=newNode("NULL",0);  
+          |                     { p=newNode("arrs",0);  
                                 $$=p;}  
           ;   
 args      :  exp COMMA args    {p=newNode("args",$1->Line);  
@@ -315,10 +316,10 @@ void yyerror(char *s)			//µ±yaccÓöµ½Óï·¨´íÎóÊ±£¬»á»Øµ÷yyerrorº¯Êı£¬²¢ÇÒ°Ñ´íÎóĞÅÏ
 {
 	 FILE* errdir=NULL;  
      errdir=fopen("stderr","w");  
-     if(fout!=NULL)  
-     fprintf(fout,"Error.");  
+     if(fout1!=NULL)  
+     fprintf(fout1,"Error.");  
      fprintf(errdir,"line %d error.\n",Line);  
-     fclose(fout);  
+     fclose(fout1);  
      fclose(errdir);  
      exit(1); 
 }
@@ -328,7 +329,7 @@ int main(int argc,char *argv[])		//³ÌĞòÖ÷º¯Êı£¬Õâ¸öº¯ÊıÒ²¿ÉÒÔ·Åµ½ÆäËü.c, .cppÎÄ¼
 	FILE* fin=NULL;  //yyinºÍyyout¶¼ÊÇFILE*ÀàĞÍ
      extern FILE* yyin;  
      fin=fopen(argv[1],"r");   //´ò¿ªÒª¶ÁÈ¡µÄÎÄ±¾ÎÄ¼ş
-     fout=fopen(argv[2],"w");  
+     fout1=fopen(argv[2],"w");  
      if(fin==NULL)  
      {   
          printf("cannot open reading file.\n");  
@@ -336,9 +337,11 @@ int main(int argc,char *argv[])		//³ÌĞòÖ÷º¯Êı£¬Õâ¸öº¯ÊıÒ²¿ÉÒÔ·Åµ½ÆäËü.c, .cppÎÄ¼
      }  
      yyin=fin;  //yacc»á´Óyyin¶ÁÈ¡ÊäÈë£¬yyinÄ¬ÈÏÊÇ±ê×¼ÊäÈë£¬ÕâÀï¸ÄÎª´ÅÅÌÎÄ¼ş¡£yaccÄ¬ÈÏÏòyyoutÊä³ö£¬¿ÉĞŞ¸Äyyout¸Ä±äÊä³öÄ¿µÄ
      yyparse();  //Ê¹yacc¿ªÊ¼¶ÁÈ¡ÊäÈëºÍ½âÎö£¬Ëü»áµ÷ÓÃlexµÄyylex()¶ÁÈ¡¼ÇºÅ
-     printTree(p,fout);  
+	 TreeNode* root = p;
+     printTree(p,fout1);  
+	 program(root);
      fclose(fin);  
-     fclose(fout);  
+     fclose(fout1);  
      return 0; 
  
 

@@ -1,4 +1,5 @@
 lex.l: lex文件
 main.h: 定义了树的节点类型
 tree.c: 打印树所需的函数
+IR.c:生成中间代码并进行错误检查
 yacc.y: yacc文件
