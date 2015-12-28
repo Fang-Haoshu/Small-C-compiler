@@ -347,7 +347,7 @@ void paras(TreeNode* p)
 void para(TreeNode* p)
 {
 	TreeNode* id = p->child->brother->child;//ASSUME the type is always INT and the var is always IDENTIFIER
-	fprintf(fout, "i32 %s",id->name);
+	fprintf(fout, "i32 %%%s",id->name);
 	
 	int dim1 = 0;
 	if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
@@ -563,7 +563,7 @@ void stmt(TreeNode* p)
 
         char* tmp = (char*)malloc(sizeof(char)*60);
         tmp = Exps(p->child->brother);//EXPS will not be empty
-        fprintf(fout,"  %%%d = load i32, i32* %%%s, align 16\n",rNum,tmp);
+        fprintf(fout,"  %%%d = load i32, i32* %s, align 4\n",rNum,tmp);
         fprintf(fout,"  ret i32 %%%d\n",rNum);
         rNum++;
 	}
@@ -802,7 +802,7 @@ char* Exps(TreeNode* p)
         op = Exp(p->child->brother);
 
         char num[10];
-        sprintf(num, "%d", rNum);
+        sprintf(num, "%d", rNum++);
         char* tmpReg = (char*)malloc(sizeof(char)*60);
 		char* tmpReg1 = (char*)malloc(sizeof(char)*60);
 		char* retReg = (char*)malloc(sizeof(char)*60);
@@ -813,11 +813,11 @@ char* Exps(TreeNode* p)
 		strcpy(tmpReg1,tmpReg);
         strcat(tmpReg1,"lnot");
 		fprintf(fout,"  %s = xor i1 %s, true\n",tmpReg1,tmpReg);
-		
-		strcpy(retReg,tmpReg1);
-        strcat(retReg,".ext");
-		fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg1);
-        return retReg;
+		return tmpReg1;
+		//strcpy(retReg,tmpReg1);
+        //strcat(retReg,".ext");
+		//fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg1);
+       // return retReg;
     }
 
     else if (!strcmp(p->child->brother->name,"=")) //EXP->EXP ASSIGNOP EXP
@@ -1060,13 +1060,13 @@ char* Exps(TreeNode* p)
         strcpy(tmpReg,"%r");
         strcat(tmpReg,num);
         fprintf(fout,"  %s = icmp eq i32 %s, %s\n",tmpReg,op1,op2);
-	
-        char* retReg = (char*)malloc(sizeof(char)*60);
-        strcpy(retReg,tmpReg);
-        strcat(retReg,".ext");
-        fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg);
+	return tmpReg;
+        //char* retReg = (char*)malloc(sizeof(char)*60);
+        //strcpy(retReg,tmpReg);
+        //strcat(retReg,".ext");
+        //fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg);
 		
-        return retReg;
+        //return retReg;
     }
     else if (!strcmp(p->child->brother->name,">")) //EXP->EXP GREATER EXP
     {
@@ -1083,13 +1083,13 @@ char* Exps(TreeNode* p)
         strcpy(tmpReg,"%r");
         strcat(tmpReg,num);
         fprintf(fout,"  %s = icmp sgt i32 %s, %s\n",tmpReg,op1,op2);
-	
-        char* retReg = (char*)malloc(sizeof(char)*60);
-        strcpy(retReg,tmpReg);
-        strcat(retReg,".ext");
-        fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg);
+	return tmpReg;
+        //char* retReg = (char*)malloc(sizeof(char)*60);
+        //strcpy(retReg,tmpReg);
+        //strcat(retReg,".ext");
+        //fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg);
 		
-        return retReg;
+        //return retReg;
     }
     else if (!strcmp(p->child->brother->name,"<")) //EXP->EXP LESS EXP
     {
@@ -1106,13 +1106,13 @@ char* Exps(TreeNode* p)
         strcpy(tmpReg,"%r");
         strcat(tmpReg,num);
         fprintf(fout,"  %s = icmp slt i32 %s, %s\n",tmpReg,op1,op2);
-	
-        char* retReg = (char*)malloc(sizeof(char)*60);
-        strcpy(retReg,tmpReg);
-        strcat(retReg,".ext");
-        fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg);
+	return tmpReg;
+        //char* retReg = (char*)malloc(sizeof(char)*60);
+        //strcpy(retReg,tmpReg);
+        //strcat(retReg,".ext");
+        //fprintf(fout,"  %s = zext i1 %s to i32\n",retReg,tmpReg);
 		
-        return retReg;
+        //return retReg;
     }
     else if (!strcmp(p->child->brother->name,"&&")) //EXP->EXP LOGICAND EXP
     {
@@ -1127,7 +1127,7 @@ char* Exps(TreeNode* p)
         fprintf(fout,"  %%r%d = icmp ne i32 %s, 0\n",reg2,op2);
 
         int reg3 = rNum; rNum++;
-        fprintf(fout,"  %%r%d = and i32 %%r%d, %%r%d\n",reg3,reg1,reg2);
+        fprintf(fout,"  %%r%d = and i1 %%r%d, %%r%d\n",reg3,reg1,reg2);
 
         char num[10];
         sprintf(num, "%d", reg3);
