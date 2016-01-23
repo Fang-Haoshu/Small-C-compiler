@@ -164,6 +164,7 @@ void defInStr(TreeNode* p)//definiton, for STSPEC -> STRUCT OPTTAG LC DEFS RC ca
     s->word = (char*)malloc(sizeof(char)*200);
     strcpy(s->word,tmpvar->name); //don't need s->type here
     s->structMem = structMemNum;
+    s->arrSize = 0;
 
     fprintf(fout,"i32");
 }
@@ -239,6 +240,7 @@ void decStrId(TreeNode* p)//declaration
 		s->structName = (char*)malloc(sizeof(char)*200);
 		strcpy(s->structName,strName);
 		s->type = 'g';
+		s->arrSize = 0;
 	}
 	else{//dec = var ASSIGNOP init
 		//WAIT FOR FUTURE WORK, TO INIT VAR
@@ -304,6 +306,7 @@ void decStrIdINT(TreeNode* p)//p is dec
 			s->word = (char*)malloc(sizeof(char)*60);
             strcpy(s->word,id->name);
             s->type = 'g';
+            s->arrSize = 0;
 		}
 		else//var LB INTEGER RB , ASSUME there is only one dimension of array
 		{
@@ -397,6 +400,7 @@ void decStrIdINT(TreeNode* p)//p is dec
 			s->word = (char*)malloc(sizeof(char)*60);
             strcpy(s->word,id->name);
             s->type = 'g';
+            s->arrSize = 0;
 		}
 		else//var LB INTEGER RB , ASSUME there is only one dimension of array
 		{
@@ -539,6 +543,7 @@ void para(TreeNode* p)
 	s->word = (char*)malloc(sizeof(char)*60);
     strcpy(s->word,id->name);
     s->type = 'a';
+    s->arrSize = 0;
 	
 	paraArr[paraPoint] = (char*)malloc(sizeof(char)*60);//WHAT IS IT??????????????????
     strcpy(paraArr[paraPoint],id->name);
@@ -647,6 +652,7 @@ void decInner(TreeNode* p)
 			s->word = (char*)malloc(sizeof(char)*60);
             strcpy(s->word,id->name);
             s->type = 'l';
+            s->arrSize = 0;
 		}
 		else//var is var LB INTEGER RB 
 		{
@@ -738,6 +744,7 @@ void decInner(TreeNode* p)
 			s->word = (char*)malloc(sizeof(char)*60);
             strcpy(s->word,id->name);
             s->type = 'l';
+            s->arrSize = 0;
 		}
 		else
 		{
@@ -1240,6 +1247,17 @@ char* Exps(TreeNode* p)
      				exit(1); 
 				}
 			}
+			if(!symTable[dim1][i]->arrSize)
+			{	
+				FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: %s is not an array\n",nodeId->Line,nodeId->name);  
+     			fprintf(stderr,"Line %d error: %s is not an array\n",nodeId->Line,nodeId->name);
+     			fclose(fout);  
+   				fclose(errdir);  
+   				exit(1);
+			}			
             struct symbol* id = symTable[dim1][i];
             switch (id->type)
             {
