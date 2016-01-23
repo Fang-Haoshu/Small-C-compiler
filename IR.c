@@ -57,10 +57,10 @@ void extdefs(TreeNode * p);
 void func(TreeNode* p);
 
 
-void program(TreeNode * root)
+void program(TreeNode * root,char *filename)
 {
 	
-	fout = fopen("IR.ll","w");
+	fout = fopen(filename,"w");
 	fprintf(fout,"@.str = private unnamed_addr constant [3 x i8] c\"%%d\\00\", align 1\n");
     fprintf(fout,"@.str1 = private unnamed_addr constant [2 x i8] c\"\\0A\\00\", align 1\n"); 
 	extdefs(root->child);
@@ -1117,8 +1117,8 @@ char* Exps(TreeNode* p)
         	FILE* errdir=NULL;  
      		errdir=fopen("stderr","w");  
      		fprintf(fout,"Error.");  
-     		fprintf(errdir,"Line %d error: %s is not a left value\n",p->child->Line,p->child->name); 
-     		fprintf(stderr,"Line %d error: %s is not a left value\n",p->child->Line,p->child->name); 
+     		fprintf(errdir,"Line %d error: %s is not a left value\n",p->child->Line,p->child->child->name); 
+     		fprintf(stderr,"Line %d error: %s is not a left value\n",p->child->Line,p->child->child->name); 
      		fclose(fout);  
      		fclose(errdir);  
      		exit(1); 
@@ -1158,8 +1158,8 @@ char* Exps(TreeNode* p)
         			FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: %s undefined\n",nodeId->Line,nodeId->name);  
-     				fprintf(stderr,"Line %d error: %s undefined\n",nodeId->Line,nodeId->name);
+     				fprintf(errdir,"Line %d error: Variable %s undefined\n",nodeId->Line,nodeId->name);  
+     				fprintf(stderr,"Line %d error: Variable %s undefined\n",nodeId->Line,nodeId->name);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -1296,12 +1296,23 @@ char* Exps(TreeNode* p)
 				FILE* errdir=NULL;  
      			errdir=fopen("stderr","w");  
      			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error:Struct %s undefined\n",nodeId->Line,nodeId->name);  
+     			fprintf(stderr,"Line %d error:Struct %s undefined\n",nodeId->Line,nodeId->name);
+     			fclose(fout);  
+   				fclose(errdir);  
+   				exit(1);
+			}
+		}
+		if(!symTable[dim1][i]->structName)
+		{
+				FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
      			fprintf(errdir,"Line %d error: %s is not a struct\n",nodeId->Line,nodeId->name);  
      			fprintf(stderr,"Line %d error: %s is not a struct\n",nodeId->Line,nodeId->name);
      			fclose(fout);  
    				fclose(errdir);  
    				exit(1);
-			}
 		}
 
         struct symbol* id = symTable[dim1][i];
