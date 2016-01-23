@@ -920,12 +920,7 @@ void stmt(TreeNode* p)
         fprintf(fout,"for%d.cond:\n",forNum);
         char* tmp = (char*)malloc(sizeof(char)*60);
 		TreeNode* Exp2 = p->child->brother->brother->brother->brother;
-		if(Exp2->child->brother == NULL)//ERROR checking.
-		{
-			fprintf(fout,"line%d:error! It will loop forever in the for(;;)!",p->Line);
-			exit(-1);
-		}
-
+ 
         tmp = Exp(Exp2);
 	
         if (!strcmp(Exp2->child->brother->name,"arrs")) //special case, ID ARRS
@@ -1092,10 +1087,20 @@ char* Exps(TreeNode* p)
 
         char* op2 = (char*)malloc(sizeof(char)*200);
         op2 = Exp(p->child->brother->brother);
-
+        //这里需要判断op1是不是左值------------------------------------------------------------------------------------------------------------
         loadFlag = 0;
         char* op1 = (char*)malloc(sizeof(char)*200);
         op1 = Exp(p->child);
+        if(op1[0]>='0' && op1[0]<='9')
+        {
+        	FILE* errdir=NULL;  
+     		errdir=fopen("stderr","w");  
+     		fprintf(fout,"Error.");  
+     		fprintf(errdir,"Line %d error: %s is not a left value\n",p->child->Line,p->child->name);  
+     		fclose(fout);  
+     		fclose(errdir);  
+     		exit(1); 
+        }
         loadFlag = 1;
 
         fprintf(fout,"  store i32 %s, i32* %s, align 4\n",op2,op1);
@@ -1192,12 +1197,18 @@ char* Exps(TreeNode* p)
 			else dim1 = (nodeId->name[0]<='Z')? nodeId->name[0]-'A':nodeId->name[0]-'a';
 
             int i=0;
-            while (strcmp(tmp,symTable[dim1][i]->word)) 
+            while (!symTable[dim1][i] || strcmp(nodeId->name,symTable[dim1][i]->word)) //error checking
 			{
 				i++;
 				if(i>=20)
 				{
-					printf("line%d: error! can't find the array", p->Line);
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Array %s undefined\n",nodeId->Line,nodeId->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
 				}
 			}
             struct symbol* id = symTable[dim1][i];
@@ -1248,13 +1259,18 @@ char* Exps(TreeNode* p)
 		else dim1 = (nodeId->name[0]<='Z')? nodeId->name[0]-'A':nodeId->name[0]-'a';
 
         int i=0;
-        while (strcmp(nodeId->name,symTable[dim1][i]->word)) //Error checking
+        while (!symTable[dim1][i] || strcmp(nodeId->name,symTable[dim1][i]->word)) //Error checking
 		{
 			i++;
 			if(i>=20) 
 			{
-				printf("line%d:error, struct undefined",p->Line);
-				exit(-1);
+				FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: %s is not a struct\n",nodeId->Line,nodeId->name);  
+     			fclose(fout);  
+   				fclose(errdir);  
+   				exit(1);
 			}
 		}
 
@@ -1274,13 +1290,18 @@ char* Exps(TreeNode* p)
 		else dim1 = (nodeId->name[0]<='Z')? nodeId->name[0]-'A':nodeId->name[0]-'a';
 
         i=0;
-        while (strcmp(nodeId->name,symTable[dim1][i]->word)) 
+        while (!symTable[dim1][i] || strcmp(nodeId->name,symTable[dim1][i]->word)) //Error checking
 		{
 			i++;
 			if(i>=20)
 			{
-				printf("line%d: struct has no such element.",p->Line);
-				exit(-1);
+				FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: Struct %s has no element called %s\n",nodeId->Line,p->child->child->name,nodeId->name);  
+     			fclose(fout);  
+   				fclose(errdir);  
+   				exit(1);
 			}
 		}
         id = symTable[dim1][i];
@@ -1330,7 +1351,7 @@ char* Exps(TreeNode* p)
         strcpy(tmpReg,"%r");
         strcat(tmpReg,num);
         fprintf(fout,"  %s = icmp eq i32 %s, %s\n",tmpReg,op1,op2);
-	return tmpReg;
+		return tmpReg;
         //char* retReg = (char*)malloc(sizeof(char)*60);
         //strcpy(retReg,tmpReg);
         //strcat(retReg,".ext");
