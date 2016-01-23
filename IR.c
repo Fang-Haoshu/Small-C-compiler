@@ -18,10 +18,10 @@ int paraFlag = 0; //paremetres flag
 int paraPoint = 0; //parameters point
 char* paraArr[10]; //parametres array
 int entryDepth = 0; //depth of stmtblocks
-int loadFlag = 1; //load or not?
 char* arrName; //array Name
 int arrPtr; // which element in array
 int arrSize; //array size
+int loadFlag = 1; //load or not?
 char* strName; //struct name
 int structMemNum; //Number of struct members
 FILE *fout;
@@ -353,6 +353,17 @@ void decStrIdINT(TreeNode* p)//p is dec
             strcpy(s->word,id->name);
             s->type = 'g';
 			s->arrSize = atoi(var->brother->brother->name);
+			if(s->arrSize <= 0)
+			{
+    			FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fprintf(stderr,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fclose(fout);  
+     			fclose(errdir);  
+     			exit(1); 				
+			}
 		}
 	}
 
@@ -448,6 +459,17 @@ void decStrIdINT(TreeNode* p)//p is dec
             strcpy(s->word,id->name);
             s->type = 'g';
 			s->arrSize = atoi(var->brother->brother->name);
+			if(s->arrSize <= 0)
+			{
+    			FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fprintf(stderr,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fclose(fout);  
+     			fclose(errdir);  
+     			exit(1); 				
+			}
 		}
 	}
 }
@@ -545,7 +567,7 @@ void para(TreeNode* p)
     s->type = 'a';
     s->arrSize = 0;
 	
-	paraArr[paraPoint] = (char*)malloc(sizeof(char)*60);//WHAT IS IT??????????????????
+	paraArr[paraPoint] = (char*)malloc(sizeof(char)*60);
     strcpy(paraArr[paraPoint],id->name);
     paraPoint++;
 }
@@ -697,6 +719,17 @@ void decInner(TreeNode* p)
             strcpy(s->word,id->name);
             s->type = 'l';
 			s->arrSize = atoi(var->brother->brother->name);
+			if(s->arrSize <= 0)
+			{
+    			FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fprintf(stderr,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fclose(fout);  
+     			fclose(errdir);  
+     			exit(1); 				
+			}
 		}
 	}
 	else//with init
@@ -789,6 +822,17 @@ void decInner(TreeNode* p)
             strcpy(s->word,id->name);
             s->type = 'l';
 			s->arrSize = atoi(var->brother->brother->name);
+			if(s->arrSize <= 0)
+			{
+    			FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fprintf(stderr,"Line %d error: Size of array must larger than 0.\n",id->Line); 
+     			fclose(fout);  
+     			fclose(errdir);  
+     			exit(1); 				
+			}
 						
 			arrName = (char*)malloc(sizeof(char)*60);
 			strcpy(arrName,id->name);
