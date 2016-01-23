@@ -149,6 +149,7 @@ void defInStr(TreeNode* p)//definiton, for STSPEC -> STRUCT OPTTAG LC DEFS RC ca
      		errdir=fopen("stderr","w");  
      		fprintf(fout,"Error.");  
      		fprintf(errdir,"Line %d error: variables %s re-declared\n",tmpvar->Line,tmpvar->name);  
+     		fprintf(stderr,"Line %d error: variables %s re-declared\n",tmpvar->Line,tmpvar->name); 
      		fclose(fout);  
      		fclose(errdir);  
      		exit(1); 
@@ -210,6 +211,7 @@ void decStrId(TreeNode* p)//declaration
      			errdir=fopen("stderr","w");  
      			fprintf(fout,"Error.");  
      			fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     			fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line); 
      			fclose(fout);  
      			fclose(errdir);  
      			exit(1);
@@ -221,7 +223,8 @@ void decStrId(TreeNode* p)//declaration
     			FILE* errdir=NULL;  
      			errdir=fopen("stderr","w");  
      			fprintf(fout,"Error.");  
-     			fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     			fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name); 
+     			fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
      			fclose(fout);  
      			fclose(errdir);  
      			exit(1); 
@@ -276,6 +279,7 @@ void decStrIdINT(TreeNode* p)//p is dec
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -288,6 +292,7 @@ void decStrIdINT(TreeNode* p)//p is dec
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -317,7 +322,8 @@ void decStrIdINT(TreeNode* p)//p is dec
 					FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line); 
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line); 
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -329,7 +335,8 @@ void decStrIdINT(TreeNode* p)//p is dec
     				FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name); 
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name); 
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -365,6 +372,7 @@ void decStrIdINT(TreeNode* p)//p is dec
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line); 
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -376,7 +384,8 @@ void decStrIdINT(TreeNode* p)//p is dec
     				FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name); 
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -408,7 +417,8 @@ void decStrIdINT(TreeNode* p)//p is dec
 					FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line);  
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -421,6 +431,7 @@ void decStrIdINT(TreeNode* p)//p is dec
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -503,6 +514,7 @@ void para(TreeNode* p)
    		errdir=fopen("stderr","w");  
      	fprintf(fout,"Error.");  
      	fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     	fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line);
      	fclose(fout);  
      	fclose(errdir);  
      	exit(1);
@@ -514,7 +526,8 @@ void para(TreeNode* p)
     		FILE* errdir=NULL;  
      		errdir=fopen("stderr","w");  
      		fprintf(fout,"Error.");  
-     		fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     		fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);
+     		fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
      		fclose(fout);  
      		fclose(errdir);  
      		exit(1); 
@@ -609,6 +622,7 @@ void decInner(TreeNode* p)
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -620,7 +634,8 @@ void decInner(TreeNode* p)
     				FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -649,7 +664,8 @@ void decInner(TreeNode* p)
 					FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line);  
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -661,7 +677,8 @@ void decInner(TreeNode* p)
     				FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name); 
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name); 
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -696,6 +713,7 @@ void decInner(TreeNode* p)
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -708,6 +726,7 @@ void decInner(TreeNode* p)
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -737,6 +756,7 @@ void decInner(TreeNode* p)
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fprintf(stderr,"Line %d error: Can not use reserved word!\n",id->Line);
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1);
@@ -748,7 +768,8 @@ void decInner(TreeNode* p)
     				FILE* errdir=NULL;  
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
-     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name); 
+     				fprintf(stderr,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -1096,7 +1117,8 @@ char* Exps(TreeNode* p)
         	FILE* errdir=NULL;  
      		errdir=fopen("stderr","w");  
      		fprintf(fout,"Error.");  
-     		fprintf(errdir,"Line %d error: %s is not a left value\n",p->child->Line,p->child->name);  
+     		fprintf(errdir,"Line %d error: %s is not a left value\n",p->child->Line,p->child->name); 
+     		fprintf(stderr,"Line %d error: %s is not a left value\n",p->child->Line,p->child->name); 
      		fclose(fout);  
      		fclose(errdir);  
      		exit(1); 
@@ -1133,8 +1155,14 @@ char* Exps(TreeNode* p)
 				i++;
 				if(i>=20)
 				{
-					fprintf(stderr,"Line %d error: Identifier %s is not defined\n",p->Line,nodeId->name);
-					exit(1);
+        			FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: %s undefined\n",nodeId->Line,nodeId->name);  
+     				fprintf(stderr,"Line %d error: %s undefined\n",nodeId->Line,nodeId->name);
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
 				}
 			}
             struct symbol* id = symTable[dim1][i];
@@ -1206,6 +1234,7 @@ char* Exps(TreeNode* p)
      				errdir=fopen("stderr","w");  
      				fprintf(fout,"Error.");  
      				fprintf(errdir,"Line %d error: Array %s undefined\n",nodeId->Line,nodeId->name);  
+     				fprintf(stderr,"Line %d error: Array %s undefined\n",nodeId->Line,nodeId->name); 
      				fclose(fout);  
      				fclose(errdir);  
      				exit(1); 
@@ -1268,6 +1297,7 @@ char* Exps(TreeNode* p)
      			errdir=fopen("stderr","w");  
      			fprintf(fout,"Error.");  
      			fprintf(errdir,"Line %d error: %s is not a struct\n",nodeId->Line,nodeId->name);  
+     			fprintf(stderr,"Line %d error: %s is not a struct\n",nodeId->Line,nodeId->name);
      			fclose(fout);  
    				fclose(errdir);  
    				exit(1);
@@ -1298,7 +1328,8 @@ char* Exps(TreeNode* p)
 				FILE* errdir=NULL;  
      			errdir=fopen("stderr","w");  
      			fprintf(fout,"Error.");  
-     			fprintf(errdir,"Line %d error: Struct %s has no element called %s\n",nodeId->Line,p->child->child->name,nodeId->name);  
+     			fprintf(errdir,"Line %d error: Struct %s has no element called %s\n",nodeId->Line,p->child->child->name,nodeId->name);
+     			fprintf(stderr,"Line %d error: Struct %s has no element called %s\n",nodeId->Line,p->child->child->name,nodeId->name);  
      			fclose(fout);  
    				fclose(errdir);  
    				exit(1);
