@@ -154,6 +154,6 @@ write                    { yylval.treeNode= newNode(yytext,Line);
 //第3段：C函数定义段
 int yywrap(void)
 {
-	puts("Success!");
+	//puts("Success!");
 	return 1;	//返回1表示读取全部结束。如果要接着读其它文件，可以这里fopen该文件，文件指针赋给yyin，并返回0
 }
