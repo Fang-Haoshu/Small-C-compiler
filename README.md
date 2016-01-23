@@ -6,8 +6,7 @@ These three programs can read Small-C source code, return tokens and build a par
 ####tree.c
 This program is used to print the parse tree that has been built. 
 ####IR.c
-This program can translate the parse tree into intermediate code.
-The intermediate code can be translated by LLVM.
+This program can translate the parse tree into LLVM codes.
 
 ##How to use it:
 There is a Makefile in this project. So you can just make it and run.
