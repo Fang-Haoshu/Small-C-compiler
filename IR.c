@@ -62,7 +62,7 @@ void program(TreeNode * root)
 	
 	fout = fopen("IR.ll","w");
 	fprintf(fout,"@.str = private unnamed_addr constant [3 x i8] c\"%%d\\00\", align 1\n");
-    	fprintf(fout,"@.str1 = private unnamed_addr constant [2 x i8] c\"\\0A\\00\", align 1\n"); 
+    fprintf(fout,"@.str1 = private unnamed_addr constant [2 x i8] c\"\\0A\\00\", align 1\n"); 
 	extdefs(root->child);
 	fprintf(fout,"declare i32 @__isoc99_scanf(i8*, ...) #2\ndeclare i32 @printf(i8*, ...) #2\nattributes #0 = { nounwind uwtable \"disable-tail-calls\"=\"false\" \"less-precise-fpmad\"=\"false\" \"no-frame-pointer-elim\"=\"true\" \"no-frame-pointer-elim-non-leaf\" \"no-infs-fp-math\"=\"false\" \"no-nans-fp-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+fxsr,+mmx,+sse,+sse2\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }\nattributes #1 = { argmemonly nounwind }\nattributes #2 = { \"disable-tail-calls\"=\"false\" \"less-precise-fpmad\"=\"false\" \"no-frame-pointer-elim\"=\"true\" \"no-frame-pointer-elim-non-leaf\" \"no-infs-fp-math\"=\"false\" \"no-nans-fp-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+fxsr,+mmx,+sse,+sse2\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }");
 }
@@ -140,7 +140,24 @@ void defInStr(TreeNode* p)//definiton, for STSPEC -> STRUCT OPTTAG LC DEFS RC ca
 	else dim1 = (tmpvar->name[0] <= 'Z') ? tmpvar->name[0]-'A' : tmpvar->name[0]-'a';
 	
 	int i=0;
-    while (symTable[dim1][i]) i++;//find an empty place
+    
+    while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    {
+    	if(!strcmp(symTable[dim1][i]->word,tmpvar->name))//repeat define
+    	{
+    		FILE* errdir=NULL;  
+     		errdir=fopen("stderr","w");  
+     		fprintf(fout,"Error.");  
+     		fprintf(errdir,"Line %d error: variables %s re-declared\n",tmpvar->Line,tmpvar->name);  
+     		fclose(fout);  
+     		fclose(errdir);  
+     		exit(1); 
+    	}
+    	i++;
+    }
+
+    //while(symTable[dim1][i]) i++;
+    
     symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
     struct symbol* s = symTable[dim1][i];
     s->word = (char*)malloc(sizeof(char)*200);
@@ -185,7 +202,33 @@ void decStrId(TreeNode* p)//declaration
 		if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 		else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 		int i=0;
-		while (symTable[dim1][i]) i++;
+		//while (symTable[dim1][i]) i++;
+
+		if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+		{
+				FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     			fclose(fout);  
+     			fclose(errdir);  
+     			exit(1);
+		}
+		while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    	{
+    		if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'g')//repeat define
+    		{
+    			FILE* errdir=NULL;  
+     			errdir=fopen("stderr","w");  
+     			fprintf(fout,"Error.");  
+     			fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     			fclose(fout);  
+     			fclose(errdir);  
+     			exit(1); 
+    		}
+    		i++;
+    	}
+
 		symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 		struct symbol* s = symTable[dim1][i];
 		s->word = (char*)malloc(sizeof(char)*200);
@@ -226,7 +269,31 @@ void decStrIdINT(TreeNode* p)//p is dec
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 				else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'g')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -244,7 +311,32 @@ void decStrIdINT(TreeNode* p)//p is dec
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 				else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'g')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
+
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -266,7 +358,31 @@ void decStrIdINT(TreeNode* p)//p is dec
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 			else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'g')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -286,7 +402,31 @@ void decStrIdINT(TreeNode* p)//p is dec
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 			else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'g')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -356,7 +496,31 @@ void para(TreeNode* p)
 	if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 	else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 	int i=0;
-	while (symTable[dim1][i]) i++;
+	//while (symTable[dim1][i]) i++;
+	if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+	{
+		FILE* errdir=NULL;  
+   		errdir=fopen("stderr","w");  
+     	fprintf(fout,"Error.");  
+     	fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     	fclose(fout);  
+     	fclose(errdir);  
+     	exit(1);
+	}
+	while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    {
+    	if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'a')//repeat define
+    	{
+    		FILE* errdir=NULL;  
+     		errdir=fopen("stderr","w");  
+     		fprintf(fout,"Error.");  
+     		fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     		fclose(fout);  
+     		fclose(errdir);  
+     		exit(1); 
+    	}
+    	i++;
+    }
 	symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 	struct symbol* s = symTable[dim1][i];
 	s->word = (char*)malloc(sizeof(char)*60);
@@ -438,7 +602,31 @@ void decInner(TreeNode* p)
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 			else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'l')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -455,7 +643,31 @@ void decInner(TreeNode* p)
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 				else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'l')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -477,7 +689,31 @@ void decInner(TreeNode* p)
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 			else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'l')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -494,7 +730,31 @@ void decInner(TreeNode* p)
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 			else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
 			int i=0;
-			while (symTable[dim1][i]) i++;
+			//while (symTable[dim1][i]) i++;
+			if(!strcmp(id->name,"int") || !strcmp(id->name,"read") || !strcmp(id->name,"write") || !strcmp(id->name,"struct"))
+				{
+					FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: Can not use reserved word!\n",id->Line);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1);
+				}
+			while (symTable[dim1][i])//find an empty place AND CHECK ERRORS
+    		{
+    			if(!strcmp(symTable[dim1][i]->word,id->name) && symTable[dim1][i]->type == 'l')//repeat define
+    			{
+    				FILE* errdir=NULL;  
+     				errdir=fopen("stderr","w");  
+     				fprintf(fout,"Error.");  
+     				fprintf(errdir,"Line %d error: variables %s re-declared\n",id->Line,id->name);  
+     				fclose(fout);  
+     				fclose(errdir);  
+     				exit(1); 
+    			}
+    			i++;
+    		}
 			symTable[dim1][i] = (struct symbol*)malloc(sizeof(struct symbol));
 			struct symbol* s = symTable[dim1][i];
 			s->word = (char*)malloc(sizeof(char)*60);
@@ -863,13 +1123,13 @@ char* Exps(TreeNode* p)
 			else dim1 = (nodeId->name[0]<='Z')? nodeId->name[0]-'A':nodeId->name[0]-'a';
 
             int i=0;
-            while (strcmp(nodeId->name,symTable[dim1][i]->word)) 
+            while (!symTable[dim1][i] || strcmp(nodeId->name,symTable[dim1][i]->word)) 
 			{
 				i++;
 				if(i>=20)
 				{
-					printf("line%d: no such IDENTIFIER",p->Line);
-					exit(-1);
+					fprintf(stderr,"Line %d error: Identifier %s is not defined\n",p->Line,nodeId->name);
+					exit(1);
 				}
 			}
             struct symbol* id = symTable[dim1][i];
