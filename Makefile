@@ -5,4 +5,4 @@ lex.yy.c:y.tab.h lex.l main.h
 y.tab.c y.tab.h:yacc.y main.h
 	yacc -d yacc.y
 clean:
-	rm -rf *.o y.tab.c lex.yy.c y.tab.h stderr a.out IR IR.ll
+	rm -rf *.o y.tab.c lex.yy.c y.tab.h stderr a.out IR IR.ll scc
