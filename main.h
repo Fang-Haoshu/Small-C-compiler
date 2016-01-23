@@ -14,11 +14,11 @@ yylval是用YYSTYPE宏定义的，只要重定义YYSTYPE宏，就能重新指定yylval的类型(可参见y
 
 typedef struct Node
 {
-	struct Node* brother;
-	struct Node* child;
-    char* name;
-    int Line;	
-	int col;
+	struct Node* brother;//pointer to brothers
+	struct Node* child;//pointer to child
+    char* name;//name of the tree node
+    int Line;//line where the node is in the code	
+	int col;//the place to put the node when print
 }TreeNode;
 
 
