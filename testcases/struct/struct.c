@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 struct acrossthegreatxxxxwallwecanreacheverycornerintheworld {
 	int sigcomm;
 };

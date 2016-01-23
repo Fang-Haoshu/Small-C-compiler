@@ -22,6 +22,9 @@ struct doubleO R,G,T;
 
 int main()
 {	
+int a;
+int b,c;
+a = b^c;
 	G.FACEBOOK=(T.GOOGLE^C.huoguo);
 	read(T.GOOGLE);
 	read(A.sigcomm);

@@ -28,13 +28,13 @@ int dfs(int x)
 
 int main()
 {
-	read(n);
+	scanf("%d",&n);
 	if(n>16)
-		write(-1);
+		printf("%d",-1);
 	else
 	{
 		dfs(0);
-		write(ans);
+		printf("%d",ans);
 	}
 	return 0;
 }

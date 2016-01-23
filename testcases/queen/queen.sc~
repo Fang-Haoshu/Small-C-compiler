@@ -15,7 +15,7 @@ int dfs(int x)
 	for(i=0;i<n;++i)
 		if(!b[i]&&!l[i+x]&&!r[i-x+n-1])
 		{
-			b[i]=-1;
+			b[i]=1;
 			l[i+x]=1;
 			r[i-x+n-1]=1;
 			dfs(x+1);
