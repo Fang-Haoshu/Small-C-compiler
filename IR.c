@@ -61,7 +61,10 @@ void program(TreeNode * root)
 {
 	
 	fout = fopen("IR.ll","w");
+	fprintf(fout,"@.str = private unnamed_addr constant [3 x i8] c\"%%d\\00\", align 1\n");
+    	fprintf(fout,"@.str1 = private unnamed_addr constant [2 x i8] c\"\\0A\\00\", align 1\n"); 
 	extdefs(root->child);
+	fprintf(fout,"declare i32 @__isoc99_scanf(i8*, ...) #2\ndeclare i32 @printf(i8*, ...) #2\nattributes #0 = { nounwind uwtable \"disable-tail-calls\"=\"false\" \"less-precise-fpmad\"=\"false\" \"no-frame-pointer-elim\"=\"true\" \"no-frame-pointer-elim-non-leaf\" \"no-infs-fp-math\"=\"false\" \"no-nans-fp-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+fxsr,+mmx,+sse,+sse2\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }\nattributes #1 = { argmemonly nounwind }\nattributes #2 = { \"disable-tail-calls\"=\"false\" \"less-precise-fpmad\"=\"false\" \"no-frame-pointer-elim\"=\"true\" \"no-frame-pointer-elim-non-leaf\" \"no-infs-fp-math\"=\"false\" \"no-nans-fp-math\"=\"false\" \"stack-protector-buffer-size\"=\"8\" \"target-cpu\"=\"x86-64\" \"target-features\"=\"+fxsr,+mmx,+sse,+sse2\" \"unsafe-fp-math\"=\"false\" \"use-soft-float\"=\"false\" }");
 }
 
 void extdefs(TreeNode * p)
@@ -235,7 +238,7 @@ void decStrIdINT(TreeNode* p)//p is dec
 			TreeNode* id = p->child->child->child;//IDENTIFIER
 			TreeNode* var = p->child->child;//var LB INTEGER RB
 			fprintf(fout,"@%s = common global [ %d x i32] zeroinitializer,",id->name,atoi(var->brother->brother->name));
-			fprintf(fout, " align %d\n",atoi(var->brother->brother->name)*4);
+			fprintf(fout, " align %d\n",16);
 			
 			int dim1 = 0;
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
@@ -430,7 +433,7 @@ void decInner(TreeNode* p)
 		if(p->child->child->brother == NULL) //var is IDENTIFIER
 		{
 			TreeNode* id = p->child->child;
-			fprintf(fout,"@%s = alloca i32 , align 4\n",id->name);
+			fprintf(fout,"%%%s = alloca i32 , align 4\n",id->name);
 			int dim1 = 0;
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
 			else dim1 = (id->name[0]<='Z')? id->name[0]-'A':id->name[0]-'a';
@@ -446,7 +449,7 @@ void decInner(TreeNode* p)
 		{
 			TreeNode* id = p->child->child->child;//IDENTIFIER
 			TreeNode* var = p->child->child;//var LB INTEGER RB
-			fprintf(fout,"@%s = alloca [ %d x i32], align 4\n",id->name,atoi(var->brother->brother->name));
+			fprintf(fout,"%%%s = alloca [ %d x i32], align 4\n",id->name,atoi(var->brother->brother->name));
 			
 			int dim1 = 0;
 			if(id->name[0]<'A' || id->name[0]>'z') dim1 = 26;
@@ -527,7 +530,7 @@ void ExpInner(TreeNode* p)
 {
 		char* val = (char*)malloc(sizeof(char)*60);
         val = Exp(p);
-        fprintf(fout,"  %%arrayidx%d = getelementptr inbounds [%d x i32], [%d x i32]* %s, i64 0, i64 %d\n",arridxNum,arrSize,arrSize,arrName,arrPtr);
+        fprintf(fout,"  %%arrayidx%d = getelementptr inbounds [%d x i32], [%d x i32]* %%%s, i64 0, i64 %d\n",arridxNum,arrSize,arrSize,arrName,arrPtr);
         fprintf(fout,"  store i32 %s, i32* %%arrayidx%d, align 4\n",val,arridxNum);
         arridxNum++;
 }
@@ -563,8 +566,8 @@ void stmt(TreeNode* p)
 
         char* tmp = (char*)malloc(sizeof(char)*60);
         tmp = Exps(p->child->brother);//EXPS will not be empty
-        fprintf(fout,"  %%%d = load i32, i32* %s, align 4\n",rNum,tmp);
-        fprintf(fout,"  ret i32 %%%d\n",rNum);
+        //fprintf(fout,"  %%%d = load i32, i32* %s, align 4\n",rNum,tmp);
+        fprintf(fout,"  ret i32 %s\n",tmp);
         rNum++;
 	}
 	else if(!strcmp(p->child->name,"if"))
@@ -702,28 +705,28 @@ void stmt(TreeNode* p)
             if (strlen(tmp)>1 && (tmp[0]=='0' || (tmp[0]=='-' && tmp[1]=='0')))
             {
                 trans = strtol(tmp,NULL,0);
-                fprintf(fout,"  %%call%d = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str, i32 0, i32 0), i32 %d)\n",callNum,trans);
+                fprintf(fout,"  %%call%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8],[3 x i8]* @.str, i32 0, i32 0), i32 %d)\n",callNum,trans);
                 callNum++;
-                fprintf(fout,"  %%call%d = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([2 x i8]* @.str1, i32 0, i32 0))\n",callNum);
+                //fprintf(fout,"  %%call%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([2 x i8],[2 x i8]* @.str1, i32 0, i32 0))\n",callNum);
                 callNum++;
             }
             else
             {
-                fprintf(fout,"  %%call%d = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str, i32 0, i32 0), i32 %s)\n",callNum,tmp);
+                fprintf(fout,"  %%call%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([3 x i8],[3 x i8]* @.str, i32 0, i32 0), i32 %s)\n",callNum,tmp);
                 callNum++;
-                fprintf(fout,"  %%call%d = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([2 x i8]* @.str1, i32 0, i32 0))\n",callNum);
+                //fprintf(fout,"  %%call%d = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([2 x i8],[2 x i8]* @.str1, i32 0, i32 0))\n",callNum);
                 callNum++;
             }
 	}
 	else//read
 	{
-			//%call = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str, i32 0, i32 0), i32* %a)
+			//%call = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str, i32 0, i32 0), i32* %a)
             char* tmp = (char*)malloc(sizeof(char)*200);
             loadFlag = 0;
             tmp = Exp(p->child->brother->brother);
             loadFlag = 1;
 
-            fprintf(fout,"  %%call%d = call i32 (i8*, ...)* @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8]* @.str, i32 0, i32 0), i32* %s)\n",callNum,tmp);
+            fprintf(fout,"  %%call%d = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8],[3 x i8]* @.str, i32 0, i32 0), i32* %s)\n",callNum,tmp);
             callNum++;
 
 	}
@@ -770,26 +773,30 @@ char* Exps(TreeNode* p)
 	}
     else if (!strcmp(p->child->name,"-")) //-
     {
-        //%%0 = load i32, i32* %s, align 4
-		//%sub = sub nsw i32 0, %0
-		//store i32 %sub, i32* %q, align 4
-        char* op = (char*)malloc(sizeof(char)*60);
-        loadFlag = 0;
-        op = Exp(p->child->brother);
-        loadFlag = 1;
+        ////%%0 = load i32, i32* %s, align 4
+		////%sub = sub nsw i32 0, %0
+		////store i32 %sub, i32* %q, align 4
+        //char* op = (char*)malloc(sizeof(char)*60);
+        //loadFlag = 0;
+        //op = Exp(p->child->brother);
+        //loadFlag = 1;
 
-        fprintf(fout,"  %%r%d = load i32, i32* %s, align 4\n",rNum,op);
-        fprintf(fout,"  %%r%d = sub nsw i32 0, %%r%d\n",rNum+1,rNum);
-        //fprintf(fout,"  store i32 %%r%d, i32* %s, align 4\n",rNum+1,op);  shouldn't be here
+        //fprintf(fout,"  %%r%d = load i32, i32* %s, align 4\n",rNum,op);
+        //fprintf(fout,"  %%r%d = sub nsw i32 0, %%r%d\n",rNum+1,rNum);
+        ////fprintf(fout,"  store i32 %%r%d, i32* %s, align 4\n",rNum+1,op);  shouldn't be here
 
-        char num[10];
-        sprintf(num, "%d", rNum+1);
-        char* tmpReg = (char*)malloc(sizeof(char)*60);
-        strcpy(tmpReg,"%r");
-        strcat(tmpReg,num);
+        //char num[10];
+        //sprintf(num, "%d", rNum+1);
+        //char* tmpReg = (char*)malloc(sizeof(char)*60);
+        //strcpy(tmpReg,"%r");
+        //strcat(tmpReg,num);
 
-        rNum+=2;
-        return tmpReg;
+        //rNum+=2;
+        //return tmpReg;
+        char* tmp = (char*)malloc(sizeof(char)*60);
+        strcpy(tmp,"-");
+	strcat(tmp,Exp(p->child->brother));
+        return tmp;
     }
     else if (!strcmp(p->child->name,"!")) //!
     {
@@ -954,7 +961,7 @@ char* Exps(TreeNode* p)
             }
 
             //%arrayidx4 = getelementptr inbounds [2 x i32]* %d, i32 0, i32 1
-            fprintf(fout,"  %s = getelementptr inbounds [%d x i32]* %s, i32 0, i32 %s\n",ret,id->arrSize,tmp,arrsIndex);
+            fprintf(fout,"  %s = getelementptr inbounds [%d x i32] ,[%d x i32]* %s, i32 0, i32 %s\n",ret,id->arrSize,id->arrSize,tmp,arrsIndex);
 
             if (loadFlag)
             {
@@ -1022,6 +1029,9 @@ char* Exps(TreeNode* p)
 
         char* ret = (char*)malloc(sizeof(char)*200);
         strcpy(ret,"getelementptr inbounds (%struct.");
+        strcat(ret,opStr);
+	strcat(ret,",");
+	strcat(ret,"%struct.");
         strcat(ret,opStr);
         strcat(ret,"* @");
         strcat(ret,op1);
@@ -1123,8 +1133,8 @@ char* Exps(TreeNode* p)
         op2 = Exp(p->child->brother->brother);
 
         int reg1 = rNum, reg2 = rNum+1; rNum+=2;
-        fprintf(fout,"  %%r%d = icmp ne i32 %s, 0\n",reg1,op1);
-        fprintf(fout,"  %%r%d = icmp ne i32 %s, 0\n",reg2,op2);
+        fprintf(fout,"  %%r%d = icmp ne i1 %s, 0\n",reg1,op1);
+        fprintf(fout,"  %%r%d = icmp ne i1 %s, 0\n",reg2,op2);
 
         int reg3 = rNum; rNum++;
         fprintf(fout,"  %%r%d = and i1 %%r%d, %%r%d\n",reg3,reg1,reg2);
