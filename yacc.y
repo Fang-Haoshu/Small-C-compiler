@@ -318,7 +318,8 @@ void yyerror(char *s)			//µ±yaccÓöµ½Óï·¨´íÎóÊ±£¬»á»Øµ÷yyerrorº¯Êı£¬²¢ÇÒ°Ñ´íÎóĞÅÏ
      errdir=fopen("stderr","w");  
      if(fout1!=NULL)  
      fprintf(fout1,"Error.");  
-     fprintf(errdir,"line %d error.\n",Line);  
+     fprintf(errdir,"Line %d error: Syntax error.\n",Line);
+     fprintf(stderr,"Line %d error: Syntax error.\n",Line);   
      fclose(fout1);  
      fclose(errdir);  
      exit(1); 
@@ -338,8 +339,8 @@ int main(int argc,char *argv[])		//³ÌĞòÖ÷º¯Êı£¬Õâ¸öº¯ÊıÒ²¿ÉÒÔ·Åµ½ÆäËü.c, .cppÎÄ¼
      yyin=fin;  //yacc»á´Óyyin¶ÁÈ¡ÊäÈë£¬yyinÄ¬ÈÏÊÇ±ê×¼ÊäÈë£¬ÕâÀï¸ÄÎª´ÅÅÌÎÄ¼ş¡£yaccÄ¬ÈÏÏòyyoutÊä³ö£¬¿ÉĞŞ¸Äyyout¸Ä±äÊä³öÄ¿µÄ
      yyparse();  //Ê¹yacc¿ªÊ¼¶ÁÈ¡ÊäÈëºÍ½âÎö£¬Ëü»áµ÷ÓÃlexµÄyylex()¶ÁÈ¡¼ÇºÅ
 	 TreeNode* root = p;
-     printTree(p,fout1);  
-	 program(root);
+     //printTree(p,fout1);  
+	 program(root,argv[2]);
      fclose(fin);  
      fclose(fout1);  
      return 0; 
