@@ -12,6 +12,6 @@ The intermediate code can be translated by LLVM.
 ##How to use it:
 There is a Makefile in this project. So you can just make it and run.
 
-./a.out "your source file"
+./scc "your input source file" "your output source file"
 
 ####You can use the testcases to test this program.
